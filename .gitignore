@@ -1,0 +1,5 @@
+.gradle
+.idea
+setup-parent/build
+setup-api/build
+/gradle

@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+}
+
+dependencies {
+    implementation project(":setup-api")
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+}

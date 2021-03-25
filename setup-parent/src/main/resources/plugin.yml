@@ -1,0 +1,16 @@
+name: Verany-SetupService
+version: 2021.3.1
+main: net.verany.setup.SetupService
+author: tylix
+api-version: 1.16
+
+commands:
+  setup:
+
+loadBefore:
+  - MC-Core-Executor
+  - CloudNet-Bridge
+
+depend:
+  - MC-Core-Executor
+  - CloudNet-Bridge
