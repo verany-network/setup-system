@@ -10,6 +10,7 @@ import net.verany.api.player.IPlayerInfo;
 import net.verany.setup.SetupService;
 import net.verany.setup.player.ISetupPlayer;
 import net.verany.setup.player.SetupPlayer;
+import net.verany.setup.scoreboard.GameScoreboard;
 import org.bukkit.entity.Player;
 
 public class PlayerJoinListener extends AbstractListener {
@@ -28,6 +29,8 @@ public class PlayerJoinListener extends AbstractListener {
             for (IPlayerInfo onlinePlayer : Verany.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(onlinePlayer.getPrefix(SetupService.INSTANCE.getModule()) + playerInfo.getNameWithColor() + " §7has joined the server§8.");
             }
+
+            new GameScoreboard(player);
         });
     }
 }
