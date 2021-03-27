@@ -22,6 +22,8 @@ public class PlayerQuitListener extends AbstractListener {
                 onlinePlayer.sendMessage(onlinePlayer.getPrefix(SetupService.INSTANCE.getModule()) + playerInfo.getNameWithColor() + " §7has left the server§8.");
             }
 
+            SetupService.INSTANCE.removeMetadata(player, "scoreboard");
+
             Verany.removePlayer(player.getUniqueId().toString(), ISetupPlayer.class);
         });
     }
