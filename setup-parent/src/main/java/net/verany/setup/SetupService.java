@@ -16,6 +16,7 @@ import net.verany.api.skull.SkullBuilder;
 import net.verany.setup.command.SetupCommand;
 import net.verany.setup.listener.PlayerJoinListener;
 import net.verany.setup.listener.PlayerQuitListener;
+import net.verany.setup.listener.ProtectionListener;
 import net.verany.setup.scoreboard.ScoreboardUpdater;
 import net.verany.setup.world.WorldManager;
 import net.verany.setup.world.manager.IWorldManager;
@@ -67,6 +68,7 @@ public class SetupService extends VeranyProject {
     private void initListener() {
         new PlayerJoinListener(this);
         new PlayerQuitListener(this);
+        new ProtectionListener(this);
     }
 
     private void initCommands() {
