@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SetupCommand extends AbstractCommand implements TabCompleter {
@@ -144,7 +145,7 @@ public class SetupCommand extends AbstractCommand implements TabCompleter {
         player.sendMessage("§7GameMode§8: §b" + worldData.getGameMode());
         player.sendMessage("§7Builder§8:");
         for (String s : worldData.getBuilder()) {
-            player.sendMessage("   " + s);
+            player.sendMessage("    " + s);
         }
         if (worldData.getBuilder().isEmpty())
             player.sendMessage("§cNo builder");
@@ -154,7 +155,7 @@ public class SetupCommand extends AbstractCommand implements TabCompleter {
             try {
                 AbstractSetupCategory category = SetupService.INSTANCE.getSetupObjectMap().get(GameModeWrapper.getGameModeByName(mapInfo[0])).getCategory(worldData.getMapName() + "_" + mapInfo[1]);
                 for (AbstractSetupCategory.LocationData location : category.getLocations()) {
-                    player.sendMessage("    " + location.getName() + (!location.getLocation().getWorld().equalsIgnoreCase("-") ? " (Set)" : ""));
+                    player.sendMessage("   " + location.getName() + (!location.getLocation().getWorld().equalsIgnoreCase("-") ? " (Set)" : ""));
                 }
             } catch (Exception exception) {
                 player.sendMessage("§cCould not find locations");
@@ -182,7 +183,7 @@ public class SetupCommand extends AbstractCommand implements TabCompleter {
         else if (strings.length == 2) {
             if (strings[0].equalsIgnoreCase("tp") || strings[0].equalsIgnoreCase("teleport") || strings[0].equalsIgnoreCase("gamemode") || strings[0].equalsIgnoreCase("mapname"))
                 return StringUtil.copyPartialMatches(strings[1], importedWorlds, new ArrayList<>(importedWorlds.size()));
-            else if (strings[0].equalsIgnoreCase("import"))
+            else if (strings[0].equalsIgnoreCase("import") || strings[0].equalsIgnoreCase("info"))
                 return StringUtil.copyPartialMatches(strings[1], unloadedWorlds, new ArrayList<>(unloadedWorlds.size()));
             else if (strings[0].equalsIgnoreCase("export"))
                 return StringUtil.copyPartialMatches(strings[1], unExportedWorlds, new ArrayList<>(unExportedWorlds.size()));
