@@ -8,15 +8,13 @@ import net.verany.api.loader.LoadObject;
 import net.verany.api.loader.config.ConfigLoader;
 import net.verany.setup.SetupService;
 import net.verany.setup.world.manager.IWorldManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class WorldManager extends ConfigLoader implements IWorldManager {
@@ -44,6 +42,8 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
 
     private void createWorld(String name) {
         World world = Bukkit.createWorld(new WorldCreator(name));
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
     }
 
     @Override
@@ -83,6 +83,7 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
         WorldData worldData = getWorldData(name);
         if (worldData == null) return;
         worldData.setStatus(WorldStatus.FINISHED);
+        updateWorld(worldData);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
     @AllArgsConstructor
     @Getter
     public static class WorldConfig implements LoadObject {
-        private final List<WorldData> importedWorlds = Collections.emptyList();
+        private final List<WorldData> importedWorlds = new CopyOnWriteArrayList<>();
     }
 
 }
