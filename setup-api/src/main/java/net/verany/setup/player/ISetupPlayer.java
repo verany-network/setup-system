@@ -11,4 +11,6 @@ public interface ISetupPlayer extends IDefault<UUID> {
 
     void setCurrentEditing(AbstractGameMode gameMode);
 
+    void setItems();
+
 }
