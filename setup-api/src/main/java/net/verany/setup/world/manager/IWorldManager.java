@@ -27,6 +27,6 @@ public interface IWorldManager {
 
     void updateWorld(WorldData worldData);
 
-    List<String> getUnloadedWorlds();
+    List<String> getUnloadedWorlds(String pathname);
 
 }
