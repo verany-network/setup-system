@@ -6,6 +6,9 @@ import net.verany.api.item.VeranyItem;
 import net.verany.api.json.AbstractJsonConfig;
 import net.verany.api.loader.LoadObject;
 import net.verany.api.loader.config.ConfigLoader;
+import net.verany.api.loader.database.DatabaseLoadObject;
+import net.verany.api.loader.database.DatabaseLoader;
+import net.verany.api.module.VeranyProject;
 import net.verany.setup.SetupService;
 import net.verany.setup.world.manager.IWorldManager;
 import org.bukkit.*;
@@ -17,16 +20,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class WorldManager extends ConfigLoader implements IWorldManager {
+public class WorldManager extends DatabaseLoader implements IWorldManager {
 
-    public WorldManager(AbstractJsonConfig config) {
-        super(config);
+    public WorldManager(VeranyProject project) {
+        super(project, "worlds", "setup");
     }
 
     @Override
     public void reloadConfig() {
         remove(getInfo(WorldConfig.class));
-        getConfig().reloadFromFile();
         loadWorlds();
     }
 
@@ -48,17 +50,20 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
 
     @Override
     public List<WorldData> getLoadedWorlds() {
-        return getData(WorldConfig.class).getImportedWorlds().stream().filter(WorldData::isLoaded).collect(Collectors.toList());
+        if (getDataOptional(WorldConfig.class).isEmpty()) return new ArrayList<>();
+        return getDataOptional(WorldConfig.class).get().getImportedWorlds().stream().filter(WorldData::isLoaded).collect(Collectors.toList());
     }
 
     @Override
     public List<WorldData> getImportedWorlds() {
-        return getData(WorldConfig.class).getImportedWorlds();
+        if (getDataOptional(WorldConfig.class).isEmpty()) return new ArrayList<>();
+        return getDataOptional(WorldConfig.class).get().getImportedWorlds();
     }
 
     @Override
     public List<WorldData> getWorlds(WorldStatus status) {
-        return getData(WorldConfig.class).getImportedWorlds().stream().filter(worldData -> worldData.getStatus().equals(status)).collect(Collectors.toList());
+        if (getDataOptional(WorldConfig.class).isEmpty()) return new ArrayList<>();
+        return getImportedWorlds().stream().filter(worldData -> worldData.getStatus().equals(status)).collect(Collectors.toList());
     }
 
     @Override
@@ -73,7 +78,7 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
         createWorld(name);
 
         getImportedWorlds().add(new WorldData(name, name, "unknown", WorldStatus.IN_WORK, Material.AIR, 0, true, true));
-        save();
+        save("worlds");
 
         return true;
     }
@@ -90,13 +95,13 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
     public void updateWorld(WorldData worldData) {
         getImportedWorlds().remove(getWorldData(worldData.getName()));
         getImportedWorlds().add(worldData);
-        save();
+        save("worlds");
     }
 
     @Override
-    public List<String> getUnloadedWorlds() {
+    public List<String> getUnloadedWorlds(String pathname) {
         List<String> toReturn = new ArrayList<>();
-        for (File file : new File("worlds").listFiles()) {
+        for (File file : new File(pathname).listFiles()) {
             String worldName = file.getName();
             if (getWorldData(worldName) == null || (getWorldData(worldName) != null && !getWorldData(worldName).isLoaded()))
                 toReturn.add(worldName);
@@ -104,10 +109,13 @@ public class WorldManager extends ConfigLoader implements IWorldManager {
         return toReturn;
     }
 
-    @AllArgsConstructor
     @Getter
-    public static class WorldConfig implements LoadObject {
+    public static class WorldConfig extends DatabaseLoadObject {
         private final List<WorldData> importedWorlds = new CopyOnWriteArrayList<>();
+
+        public WorldConfig() {
+            super("worlds");
+        }
     }
 
 }
