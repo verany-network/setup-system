@@ -58,7 +58,7 @@ public class SetupService extends VeranyProject {
 
         Verany.addTask(new ScoreboardUpdater(1000));
 
-        worldManager = new WorldManager(new JsonConfig(new File("plugins/setup/worlds.json")));
+        worldManager = new WorldManager(this);
         worldManager.loadWorlds();
 
         initCommands();
