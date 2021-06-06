@@ -25,10 +25,8 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SetupCommand extends AbstractCommand implements TabCompleter {
@@ -210,7 +208,6 @@ public class SetupCommand extends AbstractCommand implements TabCompleter {
         List<String> arguments = Lists.newArrayList("reload", "info", "import", "export", "tp", "set", "remove", "list");
 
         List<String> importedWorlds = worldManager.getImportedWorlds().stream().map(WorldData::getName).collect(Collectors.toList());
-        List<String> unloadedWorlds = worldManager.getUnloadedWorlds();
         List<String> gameModes = GameModeWrapper.VALUES.stream().map(AbstractGameMode::getName).collect(Collectors.toList());
         List<String> unExportedWorlds = worldManager.getWorlds(WorldStatus.IN_WORK).stream().map(WorldData::getName).collect(Collectors.toList());
         List<String> setupTypes = Arrays.stream(SetupType.values()).map(setupType -> setupType.name().toLowerCase()).collect(Collectors.toList());
@@ -218,11 +215,25 @@ public class SetupCommand extends AbstractCommand implements TabCompleter {
         if (strings.length == 1)
             return StringUtil.copyPartialMatches(strings[0], arguments, new ArrayList<>(arguments.size()));
         else if (strings.length == 2) {
-            if (strings[0].equalsIgnoreCase("tp") || strings[0].equalsIgnoreCase("teleport") || strings[0].equalsIgnoreCase("gamemode") || strings[0].equalsIgnoreCase("mapname"))
+            if (strings[0].equalsIgnoreCase("tp") || strings[0].equalsIgnoreCase("info") || strings[0].equalsIgnoreCase("teleport") || strings[0].equalsIgnoreCase("gamemode") || strings[0].equalsIgnoreCase("mapname"))
                 return StringUtil.copyPartialMatches(strings[1], importedWorlds, new ArrayList<>(importedWorlds.size()));
-            else if (strings[0].equalsIgnoreCase("import") || strings[0].equalsIgnoreCase("info"))
+            else if (strings[0].equalsIgnoreCase("import")) {
+                List<String> unloadedWorlds = worldManager.getUnloadedWorlds("worlds");
+                String[] folders = strings[1].split("/");
+                if (folders.length > 1) {
+                    StringBuilder fileBuilder = new StringBuilder();
+                    for (int i = 0; i < folders.length - 1; i++) {
+                        fileBuilder.append(folders[i]).append("/");
+                    }
+                    File file = new File("worlds/" + fileBuilder);
+                    File[] files = file.listFiles();
+                    if (files != null) {
+                        unloadedWorlds = Arrays.stream(files).filter(File::isDirectory).map(world -> fileBuilder + world.getName()).collect(Collectors.toList());
+                        return StringUtil.copyPartialMatches(strings[1], unloadedWorlds, new ArrayList<>(unloadedWorlds.size()));
+                    }
+                }
                 return StringUtil.copyPartialMatches(strings[1], unloadedWorlds, new ArrayList<>(unloadedWorlds.size()));
-            else if (strings[0].equalsIgnoreCase("export"))
+            } else if (strings[0].equalsIgnoreCase("export"))
                 return StringUtil.copyPartialMatches(strings[1], unExportedWorlds, new ArrayList<>(unExportedWorlds.size()));
             else if (strings[0].equalsIgnoreCase("list"))
                 return StringUtil.copyPartialMatches(strings[1], setupTypes, new ArrayList<>(setupTypes.size()));
