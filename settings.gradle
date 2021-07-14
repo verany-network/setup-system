@@ -1,4 +1,0 @@
-rootProject.name = 'setup-service'
-include 'setup-api'
-include 'setup-parent'
-
